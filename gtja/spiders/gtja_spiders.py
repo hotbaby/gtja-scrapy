@@ -6,34 +6,42 @@ import time
 from scrapy import log
 from scrapy.contrib.spiders  import CrawlSpider, Rule
 from scrapy.contrib.linkextractors.sgml import SgmlLinkExtractor
+from scrapy.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
 from scrapy.http import Request
 from scrapy.conf import settings
 
 from gtja.items import GtjaItem
+from _cffi_backend import callback
 
 
 class GtjaSpider(CrawlSpider):
     """ General configuration of the Crawl Spider """
     name = "gtja"
+    allowed_domains = ["gtja.com"]
     start_urls = [
-        #"http://www.cnblogs.com/hotbaby/",
-        #"http://www.cnblogs.com/hxsyl/",
-        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=1", # latest reports
-        "http://www.gtja.com/fyInfo/contentForJunhong.jsp?id=692190", # test url
-        "http://www.gtja.com/fyInfo/contentForJunhong.jsp?id=692040",
-        "http://www.gtja.com/fyInfo/contentForJunhong.jsp?id=692060",
+        #"http://www.gtja.com/fyInfo/contentForJunhong.jsp?id=692190", #Test case
         
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=8", #Strategy research
+        "http://www.gtja.com/fyInfo/uplusReportsListInner.jsp?catType=1&keyWord=", 
+        
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=7", #Bond research
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=6", #Financial engineering
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=5", #Company research
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=4", #Industry research
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=3", #Macro research
+        #"http://www.gtja.com/fyInfo/uplusReportsList.jsp?catType=1", #Latest report
+
     ]
     rules = [
-        #Rule(SgmlLinkExtractor(allow=[r'/default.html']), follow=True),
-        #Rule(SgmlLinkExtractor(allow=[r'/p/\w+.html']), callback="parse_report"),
-        #Rule(SgmlLinkExtractor(allow=[r''], callback="parse_report")),
+        Rule(LinkExtractor(allow=[r"/fyInfo/contentForJunhong.jsp"]), callback="parse_report"), # report abstract
+        #TODO next page
     ]
     
     def start_requests(self):
         for url in self.start_urls:
-            yield Request(url, cookies=settings["COOKIE"], callback=self.parse_report)
+            #yield Request(url, cookies=settings["COOKIE"], callback=self.parse_report)
+            yield Request(url, cookies=settings["COOKIE"])
         
     def parse_report(self, response):
         """ Extract data from html. """
