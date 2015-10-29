@@ -9,13 +9,12 @@ USER_AGENT = "%s/%s" % (BOT_NAME, BOT_VERSION)
 
 ITEM_PIPELINES = {
     "gtja.pipelines.MongoDBStorage": 1,
-    "scrapy.pipelines.files.FilesPipeline":1,
 }
 
-FILES_STORE = r"G:\gtja\report"
+FILES_STORE_PATH = r"G:\data\gtja\report\\"
 
 
-MONGODB_SERVER = "192.168.1.9"
+MONGODB_SERVER = "192.168.199.167"
 MONGODB_PORT = 27017
 MONGODB_DB = "gtja"
 MONGODB_COLLECTION = "report"

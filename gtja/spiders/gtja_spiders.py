@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import time
+import hashlib
 
 from scrapy import log
 from scrapy.contrib.spiders  import CrawlSpider, Rule
@@ -34,9 +35,8 @@ class GtjaSpider(CrawlSpider):
     ]
 
     rules = [
-        Rule(SgmlLinkExtractor(allow=[r"/fyInfo/contentForJunhong.jsp"]), callback="parse_abstract", follow=True), # report abstract
-        Rule(SgmlLinkExtractor(allow=[r"/share/commons/ShowNotesDocumentFile.jsp"]), follow=True), #TODO apped download url to the list
-        #Rule(SgmlLinkExtractor(allow=[r"/f//lotus/\w+/[.|\ ]*"]), callback="parse_report"), #TODO download the report
+        Rule(LinkExtractor(allow=[r"/fyInfo/contentForJunhong\.jsp"]), callback="parse_abstract", follow=True), # report abstract
+        Rule(LinkExtractor(allow=[r"/share/commons/ShowNotesDocumentFile\.jsp"]), callback="download_report", follow=True), #TODO apped download url to the list
         #TODO next page
     ]
     
@@ -46,7 +46,7 @@ class GtjaSpider(CrawlSpider):
 
     def parse_abstract(self, response):
         """ Extract data from html. """
-        
+
         hxs = HtmlXPathSelector(response)
         item = AbstractItem()
 
@@ -63,7 +63,19 @@ class GtjaSpider(CrawlSpider):
         return item
     
     def parse_report(self, response):
+        """ Exctract data from html. """
+        
         item = ReportItem()
         item["file_urls"] = response.url  #TODO
-        item["files"] = response.body #TODO
+        #item["files"] = response.body #TODO
+        item["files"] = "hello"
         return item
+    
+    def download_report(self, response):
+        """ Download the report pdf. """
+        
+        filename = settings["FILES_STORE_PATH"] + hashlib.md5(response.url).hexdigest() + ".pdf"
+        with open(filename, "wb") as file: #TODO what is the diffenrence between "w+" and "wb"
+            file.write(response.body)
+
+    
