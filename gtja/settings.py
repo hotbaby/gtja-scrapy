@@ -7,12 +7,15 @@ NEWSPIDER_MODULE = ["gtja.spiders"]
 USER_AGENT = "%s/%s" % (BOT_NAME, BOT_VERSION)
 
 
-ITEM_PIPELINES =[
-    "gtja.pipelines.MongoDBStorage",
-]
+ITEM_PIPELINES = {
+    "gtja.pipelines.MongoDBStorage": 1,
+    "scrapy.pipelines.files.FilesPipeline":1,
+}
+
+FILES_STORE = r"G:\gtja\report"
 
 
-MONGODB_SERVER = "127.0.0.1"
+MONGODB_SERVER = "192.168.1.9"
 MONGODB_PORT = 27017
 MONGODB_DB = "gtja"
 MONGODB_COLLECTION = "report"
